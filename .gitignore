@@ -1,0 +1,6 @@
+*.obj
+*.dll
+frameworks/cocos2d-x/cocos/2d/Debug.win32/libcocos2d.log
+*.tlog
+frameworks/
+*.pdb

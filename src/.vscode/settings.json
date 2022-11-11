@@ -1,0 +1,5 @@
+{
+    "editor.snippetSuggestions": "bottom",
+    "python.formatting.provider": "yapf",
+    "luaide.apiType": "cocos3dx"
+}

@@ -1,6 +1,10 @@
 
 cc.FileUtils:getInstance():setPopupNotify(false)
 
+if cc.Application:getInstance():getTargetPlatform() == 0 then
+    require("LuaDebug")("localhost", 7003)
+end
+
 require "config"
 require "cocos.init"
 

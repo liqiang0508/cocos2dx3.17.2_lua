@@ -122,10 +122,15 @@ void ConfigParser::readConfig(const string &filepath)
             {
                 _isWindowTop= objectInitView["isWindowTop"].GetBool();
             }
+			if (objectInitView.HasMember("scale"))
+			{
+				setScale(objectInitView["scale"].GetDouble());
+			}
         }
     }
     if (_docRootjson.HasMember("simulator_screen_size"))
     {
+		_screenSizeArray.clear();
         const rapidjson::Value& ArrayScreenSize = _docRootjson["simulator_screen_size"];
         if (ArrayScreenSize.IsArray())
         {

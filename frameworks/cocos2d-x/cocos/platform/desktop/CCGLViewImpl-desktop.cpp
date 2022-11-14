@@ -280,99 +280,72 @@ GLViewImpl* GLViewImpl::createWithFullScreen(const std::string& viewName, const 
 
 bool GLViewImpl::initWithRect(const std::string& viewName, Rect rect, float frameZoomFactor, bool resizable)
 {
-    setViewName(viewName);
+	setViewName(viewName);
 
-    _frameZoomFactor = frameZoomFactor;
+	_frameZoomFactor = frameZoomFactor;
+	//_resizable = resizable;
 
-    glfwWindowHint(GLFW_RESIZABLE,resizable?GL_TRUE:GL_FALSE);
-    glfwWindowHint(GLFW_RED_BITS,_glContextAttrs.redBits);
-    glfwWindowHint(GLFW_GREEN_BITS,_glContextAttrs.greenBits);
-    glfwWindowHint(GLFW_BLUE_BITS,_glContextAttrs.blueBits);
-    glfwWindowHint(GLFW_ALPHA_BITS,_glContextAttrs.alphaBits);
-    glfwWindowHint(GLFW_DEPTH_BITS,_glContextAttrs.depthBits);
-    glfwWindowHint(GLFW_STENCIL_BITS,_glContextAttrs.stencilBits);
-    
-    glfwWindowHint(GLFW_SAMPLES, _glContextAttrs.multisamplingCount);
+	glfwWindowHint(GLFW_RESIZABLE, resizable ? GL_TRUE : GL_FALSE);
 
-    int neededWidth = rect.size.width * _frameZoomFactor;
-    int neededHeight = rect.size.height * _frameZoomFactor;
+	glfwWindowHint(GLFW_RED_BITS, _glContextAttrs.redBits);
+	glfwWindowHint(GLFW_GREEN_BITS, _glContextAttrs.greenBits);
+	glfwWindowHint(GLFW_BLUE_BITS, _glContextAttrs.blueBits);
+	glfwWindowHint(GLFW_ALPHA_BITS, _glContextAttrs.alphaBits);
+	glfwWindowHint(GLFW_DEPTH_BITS, _glContextAttrs.depthBits);
+	glfwWindowHint(GLFW_STENCIL_BITS, _glContextAttrs.stencilBits);
 
-    _mainWindow = glfwCreateWindow(neededWidth, neededHeight, _viewName.c_str(), _monitor, nullptr);
+	// bugfix: change windows size with Monitor size, make win32 touch event happy.
+	float scale = 1.0;
+	GLFWmonitor* pMonitor = glfwGetPrimaryMonitor();
+	if (pMonitor != NULL) {
+		const GLFWvidmode* mode = glfwGetVideoMode(pMonitor);
+		scale = MIN((mode->width - 120) / rect.size.width, (mode->height - 120) / rect.size.height);
+		if (scale >= 1.0) {
+			scale = 1.0;
+		}
+	}
+	rect.size.width = scale * rect.size.width;
+	rect.size.height = scale * rect.size.height;
 
-    if (_mainWindow == nullptr)
-    {
-        std::string message = "Can't create window";
-        if (!_glfwError.empty())
-        {
-            message.append("\nMore info: \n");
-            message.append(_glfwError);
-        }
+	_mainWindow = glfwCreateWindow(rect.size.width * _frameZoomFactor,
+		rect.size.height * _frameZoomFactor,
+		_viewName.c_str(),
+		_monitor,
+		nullptr);
+	glfwMakeContextCurrent(_mainWindow);
 
-        MessageBox(message.c_str(), "Error launch application");
-        return false;
-    }
+	glfwSetMouseButtonCallback(_mainWindow, GLFWEventHandler::onGLFWMouseCallBack);
+	glfwSetCursorPosCallback(_mainWindow, GLFWEventHandler::onGLFWMouseMoveCallBack);
+	glfwSetScrollCallback(_mainWindow, GLFWEventHandler::onGLFWMouseScrollCallback);
+	glfwSetCharCallback(_mainWindow, GLFWEventHandler::onGLFWCharCallback);
+	glfwSetKeyCallback(_mainWindow, GLFWEventHandler::onGLFWKeyCallback);
+	glfwSetWindowPosCallback(_mainWindow, GLFWEventHandler::onGLFWWindowPosCallback);
+	glfwSetFramebufferSizeCallback(_mainWindow, GLFWEventHandler::onGLFWframebuffersize);
+	glfwSetWindowSizeCallback(_mainWindow, GLFWEventHandler::onGLFWWindowSizeFunCallback);
+	glfwSetWindowIconifyCallback(_mainWindow, GLFWEventHandler::onGLFWWindowIconifyCallback);
+	//glfwSetWindowCloseCallback(_mainWindow, GLFWEventHandler::onGLFWWindowCloseCallback);
 
-    /*
-    *  Note that the created window and context may differ from what you requested,
-    *  as not all parameters and hints are
-    *  [hard constraints](@ref window_hints_hard).  This includes the size of the
-    *  window, especially for full screen windows.  To retrieve the actual
-    *  attributes of the created window and context, use queries like @ref
-    *  glfwGetWindowAttrib and @ref glfwGetWindowSize.
-    *
-    *  see declaration glfwCreateWindow
-    */
-    int realW = 0, realH = 0;
-    glfwGetWindowSize(_mainWindow, &realW, &realH);
-    if (realW != neededWidth)
-    {
-        rect.size.width = realW / _frameZoomFactor;
-    }
-    if (realH != neededHeight)
-    {
-        rect.size.height = realH / _frameZoomFactor;
-    }
+	setFrameSize(rect.size.width, rect.size.height);
 
-    glfwMakeContextCurrent(_mainWindow);
+	// check OpenGL version at first
+	const GLubyte* glVersion = glGetString(GL_VERSION);
 
-    glfwSetMouseButtonCallback(_mainWindow, GLFWEventHandler::onGLFWMouseCallBack);
-    glfwSetCursorPosCallback(_mainWindow, GLFWEventHandler::onGLFWMouseMoveCallBack);
-    glfwSetScrollCallback(_mainWindow, GLFWEventHandler::onGLFWMouseScrollCallback);
-    glfwSetCharCallback(_mainWindow, GLFWEventHandler::onGLFWCharCallback);
-    glfwSetKeyCallback(_mainWindow, GLFWEventHandler::onGLFWKeyCallback);
-    glfwSetWindowPosCallback(_mainWindow, GLFWEventHandler::onGLFWWindowPosCallback);
-    glfwSetFramebufferSizeCallback(_mainWindow, GLFWEventHandler::onGLFWframebuffersize);
-    glfwSetWindowSizeCallback(_mainWindow, GLFWEventHandler::onGLFWWindowSizeFunCallback);
-    glfwSetWindowIconifyCallback(_mainWindow, GLFWEventHandler::onGLFWWindowIconifyCallback);
-    glfwSetWindowFocusCallback(_mainWindow, GLFWEventHandler::onGLFWWindowFocusCallback);
+	if (utils::atof((const char*)glVersion) < 1.5)
+	{
+		char strComplain[256] = { 0 };
+		sprintf(strComplain,
+			"OpenGL 1.5 or higher is required (your version is %s). Please upgrade the driver of your video card.",
+			glVersion);
+		MessageBox(strComplain, "OpenGL version too old");
+		return false;
+	}
 
-    setFrameSize(rect.size.width, rect.size.height);
+	initGlew();
 
-    // check OpenGL version at first
-    const GLubyte* glVersion = glGetString(GL_VERSION);
+	// Enable point size by default.
+	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
-    if ( utils::atof((const char*)glVersion) < 1.5 )
-    {
-        char strComplain[256] = {0};
-        sprintf(strComplain,
-                "OpenGL 1.5 or higher is required (your version is %s). Please upgrade the driver of your video card.",
-                glVersion);
-        MessageBox(strComplain, "OpenGL version too old");
-        return false;
-    }
-
-    initGlew();
-
-    // Enable point size by default.
-    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-    
-    if(_glContextAttrs.multisamplingCount > 0)
-        glEnable(GL_MULTISAMPLE);
-
-//    // GLFW v3.2 no longer emits "onGLFWWindowSizeFunCallback" at creation time. Force default viewport:
-//    setViewPortInPoints(0, 0, neededWidth, neededHeight);
-//
-    return true;
+	return true;
 }
 
 bool GLViewImpl::initWithFullScreen(const std::string& viewName)

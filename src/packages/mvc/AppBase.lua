@@ -20,7 +20,7 @@ function AppBase:ctor(configs)
     end
 
     if DEBUG > 1 then
-        dump(self.configs_, "AppBase configs")
+        -- dump(self.configs_, "AppBase configs")
     end
 
     if CC_SHOW_FPS then

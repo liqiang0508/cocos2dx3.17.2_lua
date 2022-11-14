@@ -48,6 +48,9 @@ public:
     void readConfig(const string &filepath = "");
 
     // predefined screen size
+	ScreenSizeArray getScreenSizeArray() {
+		return _screenSizeArray;
+	};
     int getScreenSizeCount(void);
     cocos2d::Size getInitViewSize();
     string getInitViewName();
@@ -66,6 +69,12 @@ public:
     void setInitViewSize(const cocos2d::Size &size);
     void setBindAddress(const std::string &address);
     const std::string &getBindAddress();
+	double getScale() {
+		return _scale;
+	};
+	void setScale(double s) {
+		_scale = s;
+	};
     
 private:
     ConfigParser(void);
@@ -81,6 +90,7 @@ private:
     int _uploadPort;
     int _debugPort;
     string _bindAddress;
+	double _scale;
     
     rapidjson::Document _docRootjson;
 };

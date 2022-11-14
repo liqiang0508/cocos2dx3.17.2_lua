@@ -15,7 +15,6 @@
                 "-workdir ${workspaceRoot}/../",
                 "-file src/main.lua",
                 "-write-debug-log debug.log",
-                "-scale 0.9"
             ],
             "port": 7003,
             "exePath": "${workspaceRoot}/../simulator/win32/hellolua.exe",

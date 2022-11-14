@@ -22,7 +22,7 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-
+#include "runtime/ConfigParser.h"
 #include "SimulatorConfig.h"
 #include <sstream>
 
@@ -39,7 +39,7 @@ SimulatorConfig *SimulatorConfig::getInstance()
 
 SimulatorConfig::SimulatorConfig()
 {
-    _screenSizeArray.push_back(SimulatorScreenSize("iPhone 3Gs (320x480)", 320, 480));
+   /* _screenSizeArray.push_back(SimulatorScreenSize("iPhone 3Gs (320x480)", 320, 480));
     _screenSizeArray.push_back(SimulatorScreenSize("iPhone 4 (640x960)", 640, 960));
     _screenSizeArray.push_back(SimulatorScreenSize("iPhone 5 (640x1136)", 640, 1136));
     _screenSizeArray.push_back(SimulatorScreenSize("iPhone 6 (750x1334)", 750, 1334));
@@ -52,7 +52,8 @@ SimulatorConfig::SimulatorConfig()
     _screenSizeArray.push_back(SimulatorScreenSize("Android (600x1024)", 600, 1024));
     _screenSizeArray.push_back(SimulatorScreenSize("Android (720x1280)", 720, 1280));
     _screenSizeArray.push_back(SimulatorScreenSize("Android (800x1280)", 800, 1280));
-    _screenSizeArray.push_back(SimulatorScreenSize("Android (1080x1920)", 1080, 1920));
+    _screenSizeArray.push_back(SimulatorScreenSize("Android (1080x1920)", 1080, 1920));*/
+	_screenSizeArray = ConfigParser::getInstance()->getScreenSizeArray();
 }
 
 int SimulatorConfig::getScreenSizeCount() const
@@ -70,7 +71,7 @@ int SimulatorConfig::checkScreenSize(const cocos2d::Size &size) const
     int width = size.width;
     int height = size.height;
 
-    if (width > height)
+    if (height > width)
     {
         int w = width;
         width = height;

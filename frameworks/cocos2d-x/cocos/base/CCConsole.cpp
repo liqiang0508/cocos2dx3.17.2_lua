@@ -105,20 +105,20 @@ namespace {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
     void SendLogToWindow(const char *log)
     {
-        static const int CCLOG_STRING_TAG = 1;
-        // Send data as a message
-        COPYDATASTRUCT myCDS;
-        myCDS.dwData = CCLOG_STRING_TAG;
-        myCDS.cbData = (DWORD)strlen(log) + 1;
-        myCDS.lpData = (PVOID)log;
-        if (Director::getInstance()->getOpenGLView())
-        {
-            HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
-            PostMessage(hwnd,
-                        WM_COPYDATA,
-                        (WPARAM)(HWND)hwnd,
-                        (LPARAM)(LPVOID)&myCDS);
-        }
+		static const int CCLOG_STRING_TAG = 1;
+		// Send data as a message
+		COPYDATASTRUCT myCDS;
+		myCDS.dwData = CCLOG_STRING_TAG;
+		myCDS.cbData = (DWORD)strlen(log) + 1;
+		myCDS.lpData = (PVOID)log;
+		if (Director::getInstance()->getOpenGLView())
+		{
+			HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
+			SendMessage(hwnd,
+				WM_COPYDATA,
+				(WPARAM)(HWND)hwnd,
+				(LPARAM)(LPVOID)&myCDS);
+		}
     }
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_WINRT
     void SendLogToWindow(const char *log)

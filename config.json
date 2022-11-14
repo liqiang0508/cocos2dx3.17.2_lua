@@ -1,10 +1,11 @@
 {
     "init_cfg":{
-       "isLandscape": true,
+       "isLandscape": false,
        "isWindowTop": false,
        "name": "hellolua",
-       "width": 960,
-       "height": 640,
+       "width": 2436,
+       "height": 1125,
+	   "scale":0.8,
        "entry": "src/main.lua",
        "consolePort": 6050,
        "uploadPort": 6060
@@ -24,6 +25,41 @@
             "title": "iPhone 5 (1136x640)",
             "width": 1136,
             "height": 640
+        },
+        {
+            "title": "iPhone 6/7/8 (1334x750)",
+            "width": 1334,
+            "height": 750
+        },
+        {
+            "title": "iPhone 6/7/8 Puls (1920x1080)",
+            "width": 1920,
+            "height": 1080
+        },
+        {
+            "title": "iPhone 11/iPhone XR (1792x828)",
+            "width": 1792,
+            "height": 828
+        },
+        {
+            "title": "iPhone 11 Pro/iPhone X(2436x1125)",
+            "width": 2436,
+            "height": 1125
+        },
+        {
+            "title": "iPhone 11 ProMax/iPhone XS Max (2688x1242)",
+            "width": 2688,
+            "height": 1242
+        },
+        {
+            "title": "iPhone 13/12 (2532x1170)",
+            "width": 2532,
+            "height": 1170
+        },
+        {
+            "title": "iPhone 13/12 ProMax (2778x1284)",
+            "width": 2778,
+            "height": 1284
         },
         {
             "title": "iPad (1024x768)",

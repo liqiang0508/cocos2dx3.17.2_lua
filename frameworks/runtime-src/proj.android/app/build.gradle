@@ -161,17 +161,19 @@ def compileLua(srcDir, dstDir, doCompile, is64bit, doEncrypt) {
 
 android.applicationVariants.all { variant ->
     // delete previous files first
-    delete "${buildDir}/intermediates/assets/${variant.dirName}"
+    delete "${buildDir}/intermediates/merged_assets/${variant.dirName}"
 
     variant.mergeAssets.doLast {
         copy {
-           from "${buildDir}/../../../../../res"
-           into "${buildDir}/intermediates/assets/${variant.dirName}/res"
+            from "${buildDir}/../../../../../res"
+//            into "${buildDir}/intermediates/merged_assets/res"
+            into outputDir.dir("res")
         }
 
         copy {
             from "${buildDir}/../../../../../src"
-            into "${buildDir}/intermediates/assets/${variant.dirName}/src"
+//            into "${buildDir}/intermediates/merged_assets/src"
+            into outputDir.dir("src")
         }
 
         // copy {
@@ -220,32 +222,32 @@ android.applicationVariants.all { variant ->
             // invoke cocos command to compile & encrypt the lua files
             switch (buildType) {
                 case -1:
-                    compileLua("${buildDir}/intermediates/assets/${variant.dirName}/src",
-                               "${buildDir}/intermediates/assets/${variant.dirName}/src",
+                    compileLua("${buildDir}/intermediates/assets/src",
+                               "${buildDir}/intermediates/assets/src",
                                false, false, encryptLua)
                     break
                 case 0:
-                    compileLua("${buildDir}/intermediates/assets/${variant.dirName}/src",
-                               "${buildDir}/intermediates/assets/${variant.dirName}/src",
+                    compileLua("${buildDir}/intermediates/assets/src",
+                               "${buildDir}/intermediates/assets/src",
                                true, false, encryptLua)
                     break
                 case 1:
-                    compileLua("${buildDir}/intermediates/assets/${variant.dirName}/src",
-                               "${buildDir}/intermediates/assets/${variant.dirName}/src/64bit",
+                    compileLua("${buildDir}/intermediates/assets/src",
+                               "${buildDir}/intermediates/assets/src/64bit",
                                true, true, encryptLua)
 
                     // remove the lua files in src dir
-                    delete fileTree("${buildDir}/intermediates/assets/${variant.dirName}/src") {
+                    delete fileTree("${buildDir}/intermediates/assets/src") {
                         include '**/*.lua'
                     }
-                    delete "${buildDir}/intermediates/assets/${variant.dirName}/src/cocos"
+                    delete "${buildDir}/intermediates/assets/src/cocos"
                     break
                 case 2:
-                    compileLua("${buildDir}/intermediates/assets/${variant.dirName}/src",
-                               "${buildDir}/intermediates/assets/${variant.dirName}/src/64bit",
+                    compileLua("${buildDir}/intermediates/assets/src",
+                               "${buildDir}/intermediates/assets/src/64bit",
                                true, true, encryptLua)
-                    compileLua("${buildDir}/intermediates/assets/${variant.dirName}/src",
-                               "${buildDir}/intermediates/assets/${variant.dirName}/src",
+                    compileLua("${buildDir}/intermediates/assets/src",
+                               "${buildDir}/intermediates/assets/src",
                                true, false, encryptLua)
                     break
             }

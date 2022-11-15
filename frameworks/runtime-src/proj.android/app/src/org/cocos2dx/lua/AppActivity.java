@@ -26,7 +26,10 @@ THE SOFTWARE.
 ****************************************************************************/
 package org.cocos2dx.lua;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.view.WindowManager;
+
 import org.cocos2dx.lib.Cocos2dxActivity;
 
 public class AppActivity extends Cocos2dxActivity{
@@ -42,8 +45,11 @@ public class AppActivity extends Cocos2dxActivity{
             // Don't need to finish it again since it's finished in super.onCreate .
             return;
         }
-
+        if (Build.VERSION.SDK_INT >= 28) {
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            getWindow().setAttributes(lp);
+        }
         // DO OTHER INITIALIZATION BELOW
-        
     }
 }

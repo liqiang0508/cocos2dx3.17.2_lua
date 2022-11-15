@@ -2,7 +2,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := cocos2dlua_shared
+LOCAL_MODULE := cocos2dlua
 
 LOCAL_MODULE_FILENAME := libcocos2dlua
 

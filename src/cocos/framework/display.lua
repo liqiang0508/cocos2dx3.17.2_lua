@@ -538,5 +538,26 @@ function display.removeUnusedSpriteFrames()
     spriteFrameCache:removeUnusedSpriteFrames()
     textureCache:removeUnusedTextures()
 end
+--[[
+@description: 最大缩放scale
+@return {*}
+--]]
+function display.getMaxScale()
+    return math.max(display.width / CC_DESIGN_RESOLUTION.width, display.height / CC_DESIGN_RESOLUTION.height)
+end
 
+--[[
+@description: 获取安全区域
+@return {*}
+--]]
+function display.getSafeAreaRect()
+    if display.safe_size == nil then
+        display.safe_size = director:getSafeAreaRect() --cc.rect(0,65,720,1409)--
+        if device.platform == "ios" then
+            display.safe_size.y = display.safe_size.y*0.5
+            display.safe_size.height = display.safe_size.height*1.067
+        end
+    end
+    return display.safe_size
+end
 return display

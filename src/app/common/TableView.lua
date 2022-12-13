@@ -10,7 +10,7 @@ Copyright (c) 2022 by 用户/公司名, All Rights Reserved.
 --]]
 
 --方便快捷使用tableView 使用方法
--- self.mTableViews = CustomTableView.create(self.quest_container) --传入节点大小创建tableview
+-- self.mTableViews = TableView.create(self.quest_container) --传入节点大小创建tableview
 -- self.mTableViews:setColumns(1)--设置列数
 -- self.mTableViews:setCellSpacing(25)--设置x间隔
 -- self.mTableViews:onLoadCellCallback(function()--根据外部传入的节点设置cell的大小
@@ -32,15 +32,15 @@ local TABLEVIEW_ALIGN = {
     --底部
     BOTTOM = 5,
 }
-local CustomTableView = class("CustomTableView")
+local TableView = class("TableView")
 
-function CustomTableView.create(node,dir)
+function TableView.create(node,dir)
 
-     return CustomTableView.new(node,dir)
+     return TableView.new(node,dir)
 end
 
 
-function CustomTableView:ctor(node,dir)
+function TableView:ctor(node,dir)
     self.mDirection = dir or cc.SCROLLVIEW_DIRECTION_VERTICAL--默认上下滑动
     self.mColumns = 1--默认列数
 	self.mNumber = 0--cell数量
@@ -62,14 +62,14 @@ function CustomTableView:ctor(node,dir)
 end
 
 
-function CustomTableView:scrollViewDidScroll(tableview)
+function TableView:scrollViewDidScroll(tableview)
 end
 
-function CustomTableView:numberOfCellsInTableView(tableview)
+function TableView:numberOfCellsInTableView(tableview)
     return math.ceil(self.mNumber / self.mColumns)
 end
 
-function CustomTableView:cellSizeForTable(table, idx)
+function TableView:cellSizeForTable(table, idx)
 	if self.mBgCellSize == nil then
 		local cell = self.mOnLoadCellCallback()
 		local size = cell:getContentSize()
@@ -83,7 +83,7 @@ function CustomTableView:cellSizeForTable(table, idx)
 	return self.mBgCellSize.width, self.mBgCellSize.height
 end
 
-function CustomTableView:tableCellAtIndex(tableview, idx)
+function TableView:tableCellAtIndex(tableview, idx)
 	local bgCell = tableview:dequeueCell()
 	if bgCell == nil then
 		bgCell = cc.TableViewCell:new()
@@ -93,7 +93,7 @@ function CustomTableView:tableCellAtIndex(tableview, idx)
 	return bgCell
 end
 
-function CustomTableView:runNodeShowAnimation(aNode,index,aScale)
+function TableView:runNodeShowAnimation(aNode,index,aScale)
     if not tolua.isnull(aNode) then
         aScale = aScale or 1
 		local time = index*0.01
@@ -104,7 +104,7 @@ function CustomTableView:runNodeShowAnimation(aNode,index,aScale)
     end
 end
 
-function CustomTableView:updateCell(bgCell, idx, asyncIndex)
+function TableView:updateCell(bgCell, idx, asyncIndex)
 	local createCell = function(number, isAsync)
 		local item = bgCell:getChildByName("cell_item_" .. number)
 		local index = idx * self.mColumns + number
@@ -143,7 +143,7 @@ function CustomTableView:updateCell(bgCell, idx, asyncIndex)
 	end
 end
 
-function CustomTableView:startAsyncLoad(startAsyncLoad)
+function TableView:startAsyncLoad(startAsyncLoad)
 	if startAsyncLoad then
 		for index = 0, self.mNumber do
 			local idx = math.ceil(index / self.mColumns) - 1
@@ -167,7 +167,7 @@ end
 --========================↓↓↓====外部调用====↓↓↓========================
 
 ---设置cell数量
-function CustomTableView:setCellNumber(number)
+function TableView:setCellNumber(number)
 	if self.mLastNum then
 		self.mLastNum = self.mNumber
 	else
@@ -177,14 +177,14 @@ function CustomTableView:setCellNumber(number)
 end
 
 ---设置滑动方向
-function CustomTableView:setDirection(direction)
+function TableView:setDirection(direction)
 	self.mDirection = direction
 	self.mTableview:setDirection(self.mDirection)
 	self.mTableview:setVerticalFillOrder(1 - self.mDirection)
 end
 
 ---设置列数(限垂直滑动)
-function CustomTableView:setColumns(number)
+function TableView:setColumns(number)
 	if self.mDirection == cc.SCROLLVIEW_DIRECTION_VERTICAL then
 		self.mColumns = number
 	else
@@ -193,20 +193,20 @@ function CustomTableView:setColumns(number)
 end
 
 ---设置间距
-function CustomTableView:setCellSpacing(spacingX, spacingY)
+function TableView:setCellSpacing(spacingX, spacingY)
 	self.mSpacingX = spacingX
 	self.mSpacingY = spacingY or spacingX
 end
 
 ---加载组件(必须返回组件)
-function CustomTableView:onLoadCellCallback(callfunc)
+function TableView:onLoadCellCallback(callfunc)
 	self.mOnLoadCellCallback = callfunc
 end
 
 ---加载tableview
 ---keepOffset 是否保持位移
 ---asyncLoad 异步加载
-function CustomTableView:reloadData(keepOffset, asyncLoad)
+function TableView:reloadData(keepOffset, asyncLoad)
 
 	keepOffset = keepOffset or true
 	asyncLoad = asyncLoad or true
@@ -228,7 +228,7 @@ function CustomTableView:reloadData(keepOffset, asyncLoad)
 end
 
 ---刷新TableView(仅限cell数量不变的情况下使用)
-function CustomTableView:refreshData()
+function TableView:refreshData()
 	if self.mLastNum == self.mNumber then
 		local children = self.mTableview:getContainer():getChildren()
 		for i,bgCell in ipairs(children) do
@@ -245,7 +245,7 @@ function CustomTableView:refreshData()
 end
 
 ---设置偏移(pos坐标都为负数)
-function CustomTableView:setOffset(pos, scrollAnim)
+function TableView:setOffset(pos, scrollAnim)
 	local minOffset = self.mTableview:minContainerOffset()
 	if minOffset.x > 0 or minOffset.y > 0 then
 		return
@@ -258,7 +258,7 @@ function CustomTableView:setOffset(pos, scrollAnim)
 end
 
 ---滚动到指定位置
-function CustomTableView:scrollToIndex(index, exData)
+function TableView:scrollToIndex(index, exData)
 	exData = exData or {}
 	local align = exData.align
 	local scrollAnim = exData.scrollAnim or false
@@ -289,17 +289,17 @@ function CustomTableView:scrollToIndex(index, exData)
 	end
 end
 
-function CustomTableView:setTouchEnabled(state)
+function TableView:setTouchEnabled(state)
 	self.mTableview:setTouchEnabled(state)
 end
 
-function CustomTableView:setSwallowTouches(enabled)
+function TableView:setSwallowTouches(enabled)
 	self.mTableview:setSwallowTouches(enabled)
 end
 
-function CustomTableView:setBounceable(enabled)
+function TableView:setBounceable(enabled)
 	self.mTableview:setBounceable(enabled)
 end
 
 
-return CustomTableView
+return TableView

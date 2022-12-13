@@ -8,7 +8,7 @@ Description:
 
 Copyright (c) 2022 by superZ, All Rights Reserved. 
 --]]
-local CustomTableView = require("app.common.CustomTableView")
+local TableView = require("app.common.TableView")
 local TestLayer = class("TestLayer",require("app.common.BaseLayer"))
 TestLayer.CsbFile = "TestLayer.csb";
 
@@ -24,7 +24,7 @@ function TestLayer:initUI(  )
     self.item  = self.safe_container:getChildByName("item")
     self.item:setVisible(false)
     -- print(" self.scroll_cotainer", self.scroll_cotainer)
-    self.mTableViews = CustomTableView.create(self.scroll_cotainer) --传入节点大小创建tableview
+    self.mTableViews = TableView.create(self.scroll_cotainer) --传入节点大小创建tableview
     self.mTableViews:setColumns(6)--设置列数
     self.mTableViews:setCellSpacing(22)--设置x间隔
     self.mTableViews:onLoadCellCallback(function()--根据外部传入的节点设置cell的大小

@@ -45,8 +45,7 @@ function CustomTableView:ctor(node,dir)
     self.mColumns = 1--默认列数
 	self.mNumber = 0--cell数量
     self.mNode = node
-	self.is_play_ani = {}
-
+	
     local size = node:getContentSize()
 	self.mTableview = cc.TableView:create(size)
 	node:addChild(self.mTableview)
@@ -94,10 +93,11 @@ function CustomTableView:tableCellAtIndex(tableview, idx)
 	return bgCell
 end
 
-function CustomTableView:runNodeShowAnimation(aNode,aScale)
+function CustomTableView:runNodeShowAnimation(aNode,index,aScale)
     if not tolua.isnull(aNode) then
         aScale = aScale or 1
-        local action = cc.ScaleTo:create(0.1,aScale)
+		local time = index*0.01
+        local action = cc.ScaleTo:create(time,aScale)
         aNode:setScale(0)
         aNode:stopAllActions()
         aNode:runAction(action)
@@ -119,13 +119,13 @@ function CustomTableView:updateCell(bgCell, idx, asyncIndex)
 				bgCell:addChild(item)
 			end
 		end
+		
 		if item and item.updateCell then
 			if isShow then
 				item:setVisible(true)
 				item.updateCell(item, index, isAsync)
-				if isAsync then
-					self:runNodeShowAnimation(item)
-					self.is_play_ani[index] = true
+				if  isAsync  then
+					self:runNodeShowAnimation(item,index,item:getScale())
 				end
 				
 			else
@@ -157,7 +157,7 @@ function CustomTableView:startAsyncLoad(startAsyncLoad)
 			local idx = math.ceil(index / self.mColumns) - 1
 			local bgCell = self.mTableview:cellAtIndex(idx)
 			if bgCell then
-				self:updateCell(bgCell, idx, index)
+				self:updateCell(bgCell, idx)
 			end
 		end
 	end
@@ -211,8 +211,9 @@ function CustomTableView:reloadData(keepOffset, asyncLoad)
 	keepOffset = keepOffset or true
 	asyncLoad = asyncLoad or true
 	local offset = self.mTableview:getContentOffset()
-	self:startAsyncLoad(asyncLoad)
+
 	self.mTableview:reloadData()
+	self:startAsyncLoad(asyncLoad)
 	--保持偏移
 	if keepOffset then
 		if self.mDirection == cc.SCROLLVIEW_DIRECTION_VERTICAL then

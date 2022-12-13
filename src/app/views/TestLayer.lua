@@ -34,15 +34,6 @@ function TestLayer:initUI(  )
     self.mTableViews:reloadData(false,true) --刷新tableview
 end
 
-function TestLayer:runNodeShowAnimation(aNode,aScale)
-    if not tolua.isnull(aNode) then
-        aScale = aScale or 1
-        local action = cc.ScaleTo:create(0.1,aScale)
-        aNode:setScale(0)
-        aNode:stopAllActions()
-        aNode:runAction(action)
-    end
-end
 
 function TestLayer:createItem( )
     local item = self.item:clone()

@@ -45,7 +45,7 @@ function TableView:ctor(node,dir)
     self.mColumns = 1--默认列数
 	self.mNumber = 0--cell数量
     self.mNode = node
-	
+	self.mIndex = 1
     local size = node:getContentSize()
 	self.mTableview = cc.TableView:create(size)
 	node:addChild(self.mTableview)
@@ -93,10 +93,10 @@ function TableView:tableCellAtIndex(tableview, idx)
 	return bgCell
 end
 
-function TableView:runNodeShowAnimation(aNode,index,aScale)
-    if not tolua.isnull(aNode) then
+function TableView:runNodeShowAnimation(aNode,aScale)
+    if not tolua.isnull(aNode)  then
         aScale = aScale or 1
-		local time = index*0.01
+		local time = 0.1
         local action = cc.ScaleTo:create(time,aScale)
         aNode:setScale(0)
         aNode:stopAllActions()
@@ -125,7 +125,7 @@ function TableView:updateCell(bgCell, idx, asyncIndex)
 				item:setVisible(true)
 				item.updateCell(item, index, isAsync)
 				if  isAsync  then
-					self:runNodeShowAnimation(item,index,item:getScale())
+					self:runNodeShowAnimation(item,item:getScale())
 				end
 				
 			else
@@ -145,13 +145,21 @@ end
 
 function TableView:startAsyncLoad(startAsyncLoad)
 	if startAsyncLoad then
-		for index = 0, self.mNumber do
-			local idx = math.ceil(index / self.mColumns) - 1
-			local bgCell = self.mTableview:cellAtIndex(idx)
-			if bgCell then
-				self:updateCell(bgCell, idx, index)
-			end
-		end
+		self.mTableview:stopAllActions()
+		local seq = cc.Sequence:create( cc.DelayTime:create(0.05), cc.CallFunc:create(function()
+				local idx = math.ceil(self.mIndex / self.mColumns) - 1
+				local bgCell = self.mTableview:cellAtIndex(idx)
+				if bgCell then
+					self:updateCell(bgCell, idx, self.mIndex)
+				end
+				self.mIndex = self.mIndex +1
+				if self.mIndex>self.mNumber then
+					self.mTableview:stopAllActions()
+				end
+
+		end))
+		local action = cc.RepeatForever:create(seq)
+		self.mTableview:runAction(action)
 	else
 		for index = 0, self.mNumber do
 			local idx = math.ceil(index / self.mColumns) - 1
@@ -211,9 +219,9 @@ function TableView:reloadData(keepOffset, asyncLoad)
 	keepOffset = keepOffset or true
 	asyncLoad = asyncLoad or true
 	local offset = self.mTableview:getContentOffset()
-
-	self.mTableview:reloadData()
 	self:startAsyncLoad(asyncLoad)
+	self.mTableview:reloadData()
+
 	--保持偏移
 	if keepOffset then
 		if self.mDirection == cc.SCROLLVIEW_DIRECTION_VERTICAL then

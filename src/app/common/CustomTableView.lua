@@ -108,7 +108,7 @@ function CustomTableView:updateCell(bgCell, idx, asyncIndex)
 	local createCell = function(number, isAsync)
 		local item = bgCell:getChildByName("cell_item_" .. number)
 		local index = idx * self.mColumns + number
-		local isShow = (index <= self.mNumber) and self.is_play_ani[index]
+		local isShow = (index <= self.mNumber) --and self.is_play_ani[index]
 		if not item and isShow then
 			item = self.mOnLoadCellCallback()
 			if item then
@@ -153,7 +153,13 @@ function CustomTableView:startAsyncLoad(startAsyncLoad)
 			end
 		end
 	else
-
+		for index = 0, self.mNumber do
+			local idx = math.ceil(index / self.mColumns) - 1
+			local bgCell = self.mTableview:cellAtIndex(idx)
+			if bgCell then
+				self:updateCell(bgCell, idx, index)
+			end
+		end
 	end
 
 end

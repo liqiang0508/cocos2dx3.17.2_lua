@@ -8,7 +8,7 @@
           <Image Name="bg1.png" />
           <Image Name="HelloWorld.png" />
         </Folder>
-        <Project Name="Layer.csd" Type="Layer" />
+        <Project Name="TestLayer.csd" Type="Layer" />
       </RootFolder>
     </Group>
   </SolutionFolder>

@@ -44,11 +44,13 @@ function TableView:ctor(node,dir)
     self.mDirection = dir or cc.SCROLLVIEW_DIRECTION_VERTICAL--默认上下滑动
     self.mColumns = 1--默认列数
 	self.mNumber = 0--cell数量
-    self.mNode = node
-	self.mIndex = 1
+    self.mNode = node --父节点
+	self.mIndex = 1 --当前index
+	self.mSchduler = nil --异步动画定时器
+
     local size = node:getContentSize()
 	self.mTableview = cc.TableView:create(size)
-	node:addChild(self.mTableview)
+	self.mNode:addChild(self.mTableview)
     
 
     self.mTableview:setDelegate()
@@ -143,23 +145,28 @@ function TableView:updateCell(bgCell, idx, asyncIndex)
 	end
 end
 
+function TableView:clearSchdule()
+	if self.mSchduler then
+		cc.Director:getInstance():getScheduler():unscheduleScriptEntry(self.mSchduler)
+		self.mSchduler = nil
+	end
+end
+
 function TableView:startAsyncLoad(startAsyncLoad)
 	if startAsyncLoad then
-		self.mTableview:stopAllActions()
-		local seq = cc.Sequence:create( cc.DelayTime:create(0.02), cc.CallFunc:create(function()
-				local idx = math.ceil(self.mIndex / self.mColumns) - 1
-				local bgCell = self.mTableview:cellAtIndex(idx)
-				if bgCell then
-					self:updateCell(bgCell, idx, self.mIndex)
-					self.mIndex = self.mIndex +1
-				end
-				if self.mIndex>self.mNumber then
-					self.mTableview:stopAllActions()
-				end
+		self:clearSchdule()
+		self.mSchduler = cc.Director:getInstance():getScheduler():scheduleScriptFunc(function()
+			local idx = math.ceil(self.mIndex / self.mColumns) - 1
+			local bgCell = self.mTableview:cellAtIndex(idx)
+			if bgCell then
+				self:updateCell(bgCell, idx, self.mIndex)
+				self.mIndex = self.mIndex +1
+			end
+			if self.mIndex>self.mNumber then
+				self:clearSchdule()
+			end
+		end, 0.05, false);
 
-		end))
-		local action = cc.RepeatForever:create(seq)
-		self.mTableview:runAction(action)
 	else
 		for index = 0, self.mNumber do
 			local idx = math.ceil(index / self.mColumns) - 1

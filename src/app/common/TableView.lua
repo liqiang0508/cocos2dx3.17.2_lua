@@ -108,7 +108,7 @@ function TableView:updateCell(bgCell, idx, asyncIndex)
 	local createCell = function(number, isAsync)
 		local item = bgCell:getChildByName("cell_item_" .. number)
 		local index = idx * self.mColumns + number
-		local isShow = (index <= self.mNumber) --and self.is_play_ani[index]
+		local isShow = (index <= self.mNumber) and self.mIndex>=index
 		if not item and isShow then
 			item = self.mOnLoadCellCallback()
 			if item then
@@ -146,13 +146,13 @@ end
 function TableView:startAsyncLoad(startAsyncLoad)
 	if startAsyncLoad then
 		self.mTableview:stopAllActions()
-		local seq = cc.Sequence:create( cc.DelayTime:create(0.05), cc.CallFunc:create(function()
+		local seq = cc.Sequence:create( cc.DelayTime:create(0.02), cc.CallFunc:create(function()
 				local idx = math.ceil(self.mIndex / self.mColumns) - 1
 				local bgCell = self.mTableview:cellAtIndex(idx)
 				if bgCell then
 					self:updateCell(bgCell, idx, self.mIndex)
+					self.mIndex = self.mIndex +1
 				end
-				self.mIndex = self.mIndex +1
 				if self.mIndex>self.mNumber then
 					self.mTableview:stopAllActions()
 				end

@@ -10,3 +10,7 @@ frameworks/runtime-src/proj.android/app/.cxx/
 frameworks/runtime-src/proj.win32/Debug.win32/
 frameworks/cocos2d-x/cocos/platform/android/libcocos2dx/build/
 frameworks/cocos2d-x/cocos/scripting/lua-bindings/proj.win32/Debug.win32/
+*.log
+frameworks/runtime-src/proj.android/.idea/
+*.db
+*.suo

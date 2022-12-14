@@ -31,9 +31,10 @@
     <Item Key="TabsParamsKey">
       <Value ctype="TabsInfo">
         <OpenedDocuments>
-          <FilePathData Path="Layer.csd" />
+          <FilePathData Path="csb/test_layer.csd" />
+          <FilePathData Path="csb/main_layer.csd" />
         </OpenedDocuments>
-        <ActiveDocument Path="Layer.csd" />
+        <ActiveDocument Path="csb/test_layer.csd" />
       </Value>
     </Item>
   </Properties>

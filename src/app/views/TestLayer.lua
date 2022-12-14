@@ -10,7 +10,7 @@ Copyright (c) 2022 by superZ, All Rights Reserved.
 --]]
 local TableView = require("app.common.TableView")
 local TestLayer = class("TestLayer",require("app.common.BaseLayer"))
-TestLayer.CsbFile = "TestLayer.csb";
+TestLayer.CsbFile = "csb/test_layer.csb";
 
 function TestLayer:ctor( ... )
     self.super.ctor(self);
@@ -20,10 +20,14 @@ end
 
 function TestLayer:initUI(  )
     
-    self.scroll_cotainer = self.safe_container:getChildByName("scroll_cotainer")
-    self.item  = self.safe_container:getChildByName("item")
+    self.scroll_cotainer = self.safe_container.scroll_cotainer
+    self.btn_close = self.safe_container.btn_close
+    self.item  = self.safe_container.item
     self.item:setVisible(false)
-    -- print(" self.scroll_cotainer", self.scroll_cotainer)
+
+    registerBtnClickCall(self.btn_close,function()
+       self:close()
+    end)
     self.mTableViews = TableView.create(self.scroll_cotainer) --传入节点大小创建tableview
     self.mTableViews:setColumns(6)--设置列数
     self.mTableViews:setCellSpacing(22)--设置x间隔

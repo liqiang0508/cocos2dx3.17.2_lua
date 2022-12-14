@@ -7,7 +7,7 @@ end
 
 require "config"
 require "cocos.init"
-
+require "app.common.Global"
 local function main()
     require("app.MyApp"):create():run()
 end

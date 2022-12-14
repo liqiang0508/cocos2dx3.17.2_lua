@@ -1,8 +1,8 @@
 
 local MainScene = class("MainScene", cc.load("mvc").ViewBase)
-local  TestLayer = require("app.views.TestLayer")
+local  MainLayer = require("app.views.MainLayer")
 function MainScene:onCreate()
-    local layer = TestLayer.new()
+    local layer = MainLayer.new()
     self:addChild(layer)
 end
 

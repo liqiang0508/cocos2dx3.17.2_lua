@@ -156,6 +156,10 @@ function TableView:startAsyncLoad(startAsyncLoad)
 	if startAsyncLoad then
 		self:clearSchdule()
 		self.mSchduler = cc.Director:getInstance():getScheduler():scheduleScriptFunc(function()
+			if tolua.isnull(self.mTableview) then
+				self:clearSchdule()
+				return 
+			end
 			local idx = math.ceil(self.mIndex / self.mColumns) - 1
 			local bgCell = self.mTableview:cellAtIndex(idx)
 			if bgCell then

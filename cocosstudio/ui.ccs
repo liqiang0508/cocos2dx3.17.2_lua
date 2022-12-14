@@ -4,9 +4,9 @@
     <Group ctype="ResourceGroup">
       <RootFolder Name=".">
         <Folder Name="csb">
-          <Project Name="test_layer.csd" Type="Layer" />
           <Project Name="main_layer.csd" Type="Layer" />
           <Project Name="temp.csd" Type="Layer" />
+          <Project Name="test_layer.csd" Type="Layer" />
         </Folder>
         <Folder Name="resources">
           <Image Name="bg.png" />

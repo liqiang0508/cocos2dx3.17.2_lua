@@ -17,7 +17,7 @@ Copyright (c) 2022 by 用户/公司名, All Rights Reserved.
 --     return self:createItem()
 -- end)
 -- self.mTableViews:setCellNumber(7) --设置数据量数量
--- self.mTableViews:reloadData() --刷新tableview
+-- self.mTableViews:reloadData(keepOffset, asyncLoad)) --刷新tableview
 
 
 local TABLEVIEW_ALIGN = {
@@ -35,10 +35,10 @@ local TABLEVIEW_ALIGN = {
 local TableView = class("TableView")
 
 function TableView.create(node,dir)
-
      return TableView.new(node,dir)
 end
 
+local Action_Tag = 999
 
 function TableView:ctor(node,dir)
     self.mDirection = dir or cc.SCROLLVIEW_DIRECTION_VERTICAL--默认上下滑动
@@ -46,12 +46,10 @@ function TableView:ctor(node,dir)
 	self.mNumber = 0--cell数量
     self.mNode = node --父节点
 	self.mIndex = 1 --当前index
-	self.mSchduler = nil --异步动画定时器
 
     local size = node:getContentSize()
 	self.mTableview = cc.TableView:create(size)
 	self.mNode:addChild(self.mTableview)
-    
 
     self.mTableview:setDelegate()
 	self.mTableview:setDirection(self.mDirection)
@@ -146,31 +144,30 @@ function TableView:updateCell(bgCell, idx, asyncIndex)
 end
 
 function TableView:clearSchdule()
-	if self.mSchduler then
-		cc.Director:getInstance():getScheduler():unscheduleScriptEntry(self.mSchduler)
-		self.mSchduler = nil
+	if self.mTableview then
+		self.mTableview:stopActionByTag(Action_Tag)
 	end
 end
 
 function TableView:startAsyncLoad(startAsyncLoad)
 	if startAsyncLoad then
 		self:clearSchdule()
-		self.mSchduler = cc.Director:getInstance():getScheduler():scheduleScriptFunc(function()
-			if tolua.isnull(self.mTableview) then
-				self:clearSchdule()
-				return 
-			end
-			local idx = math.ceil(self.mIndex / self.mColumns) - 1
-			local bgCell = self.mTableview:cellAtIndex(idx)
-			if bgCell then
-				self:updateCell(bgCell, idx, self.mIndex)
-				self.mIndex = self.mIndex +1
-			end
-			if self.mIndex>self.mNumber then
-				self:clearSchdule()
-			end
-		end, 0.05, false);
-
+		if self.mTableview then
+			local seq = cc.Sequence:create(cc.CallFunc:create(function()
+				local idx = math.ceil(self.mIndex / self.mColumns) - 1
+				local bgCell = self.mTableview:cellAtIndex(idx)
+				if bgCell then
+					self:updateCell(bgCell, idx, self.mIndex)
+					self.mIndex = self.mIndex + 1
+				end
+				if self.mIndex > self.mNumber then
+					self:clearSchdule()
+				end
+			end), cc.DelayTime:create(0.05))
+			local action= cc.RepeatForever:create(seq)
+			action:setTag(Action_Tag)
+			self.mTableview:runAction(action)
+		end
 	else
 		for index = 0, self.mNumber do
 			local idx = math.ceil(index / self.mColumns) - 1
@@ -223,8 +220,8 @@ function TableView:onLoadCellCallback(callfunc)
 end
 
 ---加载tableview
----keepOffset 是否保持位移
----asyncLoad 异步加载
+---@param keepOffset 是否保持位移
+---@param asyncLoad 异步加载
 function TableView:reloadData(keepOffset, asyncLoad)
 
 	keepOffset = keepOffset or true
@@ -319,6 +316,5 @@ end
 function TableView:setBounceable(enabled)
 	self.mTableview:setBounceable(enabled)
 end
-
 
 return TableView
